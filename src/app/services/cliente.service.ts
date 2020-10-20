@@ -29,8 +29,55 @@ export class ClienteService{
             })
         }))   
     }
+    
+    cadastrar(cliente : any): Observable<any>{
+
+        return from(new Observable(observe=>{
+            this.firestore.collection('cliente').add(cliente).then(response=>{
+                observe.next("Você foi cadastrado!");
+
+            },(err)=>{
+                observe.error("Erro ao cadastrar");
+
+            })
+        }));
+    }
+    
+    buscaPorId(id : any) : Observable<any>{
+        //.doc(id).snapshotChanges() busca pelo id do documento
+        return from(new Observable(observe=>{
+            this.firestore.collection('cliente').doc(id).snapshotChanges().subscribe(response=>{
+            
+            let cliente : Cliente = new Cliente();
+            cliente.id = response.payload.id;
+            cliente.setData(response.payload.data());
+            observe.next(cliente);
+
+            },(err)=>{
+                observe.error("Erro ao buscar o cliente")
+            })
+        }));
+    }
+
+    atualizar(cliente : any) : Observable<any>{
+        return from(new Observable(observe=>{
+            
+            this.firestore.collection('cliente').doc(cliente.id).set(cliente).then(response=>{
+                observe.next("Dados atualizados");
+            },(err)=>{
+                observe.error("Erro ao atualizar");
+            })
+        }));
+    }
+
+    excluir(cliente : any) : Observable<any>{
+        return from(new Observable(observe=>{
+            
+            this.firestore.collection('cliente').doc(cliente.id).delete().then(response=>{
+                observe.next("Dados atualizados");
+            },(err)=>{
+                observe.error("Erro ao atualizar");
+            })
+        }));
+    }
 }
-
-
-
-
